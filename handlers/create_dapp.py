@@ -8,8 +8,8 @@ from aiogram import F, Router, types
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 
-from database.db import save_dapp_data_in_db, save_transaction_in_db
-from keyboards import cancel_kb, saved_kb, start_kb
+from database.db import save_dapp_data_in_db
+from keyboards import cancel_kb, start_kb
 
  
  
@@ -31,7 +31,7 @@ async def dapp_name_input(
 ) -> None:
     """Asks to enter name for new dApp."""
     await state.set_state(CreateDapp.app_name)
-    await callback.message.answer(
+    await callback.message.edit_text(
         "Enter name for new dApp",
         reply_markup=cancel_kb()  # Shows a keyboard button for FSM testing.
     )
@@ -90,6 +90,6 @@ async def save_dapp_data(
             wallet_owner=wallet_owner, wallet_treasury=wallet_treasury
     )
     await message.answer(
-        "New dApp has been saved\n\nChoose what to do next",
+        f"New dApp: <b>{dapp_name}</b> has been saved",
         reply_markup=start_kb()
     )

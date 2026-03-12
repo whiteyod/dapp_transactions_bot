@@ -39,27 +39,6 @@ def start_kb() -> types.InlineKeyboardMarkup:
     return kb.as_markup()
 
 
-def saved_kb():
-    kb = InlineKeyboardBuilder()
-    kb.add(
-        types.InlineKeyboardButton(
-            text="See dApps",
-            callback_data="show_dapps"
-        ),
-        types.InlineKeyboardButton(
-            text="Add Transaction",
-            callback_data="add_transaction"
-        ),
-        types.InlineKeyboardButton(
-            text="Back to Main",
-            callback_data="cancel"
-        )
-    )
-    kb.adjust(1)
-
-    return kb.as_markup()
-
-
 def select_dapp_kb(app_names: list):
     kb = InlineKeyboardBuilder()
     for i in app_names:
@@ -75,7 +54,7 @@ def select_dapp_kb(app_names: list):
             callback_data="cancel"
         )
     )
-    kb.adjust(2, 1)
+    kb.adjust(1)
 
     return kb.as_markup()
 
@@ -95,7 +74,27 @@ def delete_dapp_kb(app_names: list):
             callback_data="cancel"
         )
     )
-    kb.adjust(2, 1)
+    kb.adjust(1)
+
+    return kb.as_markup()
+
+
+def see_transactions_kb(app_names: list):
+    kb = InlineKeyboardBuilder()
+    for i in app_names:
+        kb.add(
+            types.InlineKeyboardButton(
+                text=f"{i}",
+                callback_data=f"see_{i}"
+            )
+        )
+    kb.add(
+        types.InlineKeyboardButton(
+            text="Cancel",
+            callback_data="cancel"
+        )
+    )
+    kb.adjust(1)
 
     return kb.as_markup()
 
@@ -128,9 +127,25 @@ def main_dapps_menu_kb():
         types.InlineKeyboardButton(
             text="Delete dApp",
             callback_data="delete_dapp"
+        ),
+        types.InlineKeyboardButton(
+            text="Back",
+            callback_data="cancel"
         )
     )
     kb.adjust(1)
+
+    return kb.as_markup()
+
+
+def cancel_transaction_kb():
+    kb = InlineKeyboardBuilder()
+    kb.add(
+        types.InlineKeyboardButton(
+            text="Cancel",
+            callback_data="add_transaction"
+        )
+    )
 
     return kb.as_markup()
 
@@ -141,6 +156,18 @@ def cancel_kb() -> types.InlineKeyboardMarkup:
         types.InlineKeyboardButton(
             text="Cancel",
             callback_data="cancel"
+        )
+    )
+
+    return kb.as_markup()
+
+
+def back_to_see_transactions_kb() -> types.InlineKeyboardMarkup:
+    kb = InlineKeyboardBuilder()
+    kb.add(
+        types.InlineKeyboardButton(
+            text="Back",
+            callback_data="see_transactions"
         )
     )
 

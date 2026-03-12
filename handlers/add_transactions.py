@@ -3,7 +3,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 
 from database.db import get_dapp_names, save_transaction_in_db
-from keyboards import cancel_kb, saved_kb, select_dapp_kb
+from keyboards import cancel_transaction_kb, select_dapp_kb, start_kb
 
 
 router = Router()
@@ -39,8 +39,8 @@ async def add_transaction(
     await state.update_data(app_name=app_name)
     await state.set_state(AddTransaction.transaction_amount)
     await callback.message.edit_text(
-        "Enter transaction amount in SOL:",
-        reply_markup=cancel_kb()
+        f"Selected dApp: <b>{app_name}</b>\n\nEnter transaction amount in SOL:",
+        reply_markup=cancel_transaction_kb()
     )
 
 
@@ -60,8 +60,8 @@ async def save_transaction_data(
         user_id=user_id, app_name=app_name, trsansaction_amount=trans_amount
     )
     await message.answer(
-        f"Transaction for {app_name} saved. \n\nWhats next?",
-        reply_markup=saved_kb()
+        f"Transaction for <b>{app_name}</b> saved. \n\nWhat next?",
+        reply_markup=start_kb()
     )
 
 

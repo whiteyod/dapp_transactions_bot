@@ -20,6 +20,7 @@ class Settings(BaseSettings):
     # Telegram bot token.
     # `SecretStr` prevents accidental token leaks via `repr()`/logs.
     bot_token: SecretStr
+    api_key: SecretStr
 
     class Config:
         # Load variables from `.env` in the project root for local development.

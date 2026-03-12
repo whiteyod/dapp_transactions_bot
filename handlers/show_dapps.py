@@ -1,9 +1,8 @@
 from aiogram import F, Router, types
-from aiogram.fsm.context import FSMContext
-from aiogram.fsm.state import State, StatesGroup
 
 from database.db import get_all_dapps, get_transactions_for_dapp
-from keyboards import cancel_kb, saved_kb, main_dapps_menu_kb
+from keyboards import main_dapps_menu_kb
+from services.container import get_quotes
 
 
 router = Router()
@@ -27,17 +26,26 @@ async def show_all_dapps(callback: types.CallbackQuery):
     trans_rows = [
         await get_transactions_for_dapp(user_id, it["name"]) for it in items
     ]
+    # Get current SOL price
+    symbol = "SOL"
+    quotes = await get_quotes([symbol])
+    result = quotes.get(symbol.upper())
     for i, trans in enumerate(trans_rows):
         balance = sum(t[0] for t in trans) if trans else 0.0
         items[i]["balance"] = balance
+        items[i]["USD"] = balance * result
+        num = [t[0] for t in trans]
+        print(num)
     # Create message layout
-    daaps_message = ["<b>.................</b>"]
+    daaps_message = ["<b>.................</b>\n\n"]
     for it in items:
         daaps_message.append(
-            f"{it["name"]} > Balance: {it["balance"]}\n"
-            f"Owner: {it["owner"]}\n"
-            f"Treasury: {it["treasury"]}"
+            f"<b>{it["name"]}</b>\n"
+            f"{it["balance"]} SOL ({it["USD"]:.2f} USD)\n"
+            f"<b>Owner:</b> {it["owner"]}\n"
+            f"<b>Treasury:</b> {it["treasury"]}\n\n"
+            "<b>.................</b>\n"
         )
     edited_message = '\n'.join(daaps_message)
-    await callback.message.answer(f"{edited_message}", reply_markup=main_dapps_menu_kb())
+    await callback.message.edit_text(f"{edited_message}", reply_markup=main_dapps_menu_kb())
 

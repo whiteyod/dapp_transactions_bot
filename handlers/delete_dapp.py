@@ -4,7 +4,7 @@ from aiogram.fsm.state import State, StatesGroup
 
 from database.db import delete_dapp_from_db, delete_transactions_from_db,\
     get_dapp_names
-from keyboards import cancel_kb, saved_kb, start_kb, delete_dapp_kb,\
+from keyboards import start_kb, delete_dapp_kb,\
     confirm_delete_kb
 
 
@@ -44,7 +44,7 @@ async def delete_dapp_selected(
     # Set state to catch delete confirmation
     await state.set_state(DeleteDapp.confirm_delete)
     await callback.message.edit_text(
-        f"You trying to delete {app_name}\n\nAre you sure?",
+        f"You trying to delete: <b>{app_name}</b>\n\nAre you sure?",
         reply_markup=confirm_delete_kb(app_name)
     )
 
@@ -62,7 +62,7 @@ async def remove_dapp(
     await delete_transactions_from_db(user_id=user_id, app_name=app_name)
     # Inform user about successfull deleteion
     await callback.message.edit_text(
-        f"dApp {app_name} has been removed",
+        f"dApp <b>{app_name}</b> has been removed",
         reply_markup=start_kb()
     )
 

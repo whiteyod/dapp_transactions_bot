@@ -21,8 +21,8 @@ from aiogram.client.default import DefaultBotProperties
 from aiogram.enums.parse_mode import ParseMode
 from loguru import logger
 from config_reader import config
-from handlers import commands, create_dapp, transactions, show_dapps, \
-    another_buttons, delete_dapp
+from handlers import add_transactions, commands, create_dapp, show_dapps, \
+    another_buttons, delete_dapp, show_transactions
 
 # Basic logging so you can see incoming updates and errors in the console.
 logging.basicConfig(level=logging.INFO)
@@ -54,10 +54,11 @@ If you deploy via webhooks, remove `start_polling(...)` and configure webhook.
     dp.include_routers(
         commands.router, 
         create_dapp.router,
-        transactions.router,
+        add_transactions.router,
         show_dapps.router,
         another_buttons.router,
-        delete_dapp.router
+        delete_dapp.router,
+        show_transactions.router
     )
 
     # If the bot previously worked in webhook mode, remove webhook and optionally

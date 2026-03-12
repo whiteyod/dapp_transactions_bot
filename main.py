@@ -17,9 +17,12 @@ import logging
 
 from aiogram import Bot, Dispatcher
 from aiogram.fsm.storage.memory import MemoryStorage
+from aiogram.client.default import DefaultBotProperties
+from aiogram.enums.parse_mode import ParseMode
 from loguru import logger
 from config_reader import config
-from handlers import buttons, commands
+from handlers import commands, create_dapp, transactions, show_dapps, \
+    another_buttons, delete_dapp
 
 # Basic logging so you can see incoming updates and errors in the console.
 logging.basicConfig(level=logging.INFO)
@@ -36,7 +39,11 @@ If you deploy via webhooks, remove `start_polling(...)` and configure webhook.
 """
 
     # Create bot client with the token loaded from `.env` (see `config_reader.py`).
-    bot = Bot(token=config.bot_token.get_secret_value())
+    bot = Bot(
+        token=config.bot_token.get_secret_value(),
+        default=DefaultBotProperties(
+            parse_mode=ParseMode.HTML
+        ))
 
     # Dispatcher is the main routing engine: it receives updates and passes them
     # to the first handler that matches filters.
@@ -44,7 +51,14 @@ If you deploy via webhooks, remove `start_polling(...)` and configure webhook.
 
     # Attach routers with handlers.
     # Add your own routers here (e.g. `dp.include_routers(admin.router, ...)`).
-    dp.include_routers(commands.router, buttons.router)
+    dp.include_routers(
+        commands.router, 
+        create_dapp.router,
+        transactions.router,
+        show_dapps.router,
+        another_buttons.router,
+        delete_dapp.router
+    )
 
     # If the bot previously worked in webhook mode, remove webhook and optionally
     # drop pending updates so you start from a clean state.

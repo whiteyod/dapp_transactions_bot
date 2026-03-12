@@ -8,7 +8,7 @@ from aiogram import types
 from aiogram.utils.keyboard import InlineKeyboardBuilder
  
  
-def test_button_kb() -> types.InlineKeyboardMarkup:
+def start_kb() -> types.InlineKeyboardMarkup:
     """Create a one-button inline keyboard.
 
     The `callback_data` value must match the filter used in the callback handler
@@ -21,27 +21,127 @@ def test_button_kb() -> types.InlineKeyboardMarkup:
     # Add a single inline button.
     kb.add(
         types.InlineKeyboardButton(
-            text="Test",
-            callback_data="test_button",
+            text="See dApps",
+            callback_data="show_dapps"
+        ),
+        types.InlineKeyboardButton(
+            text="Add new dApp",
+            callback_data="add_app",
+        ),
+        types.InlineKeyboardButton(
+            text="Add Transaction",
+            callback_data="add_transaction"
         )
     )
+    kb.adjust(1)
  
     # Convert builder to markup object expected by `reply_markup=test_button_kb()`.
     return kb.as_markup()
 
 
-def ask_user_kb() -> types.InlineKeyboardMarkup:
-    """Create a simple keyboard for FSM testing."""
-
-    # Create a keyboard builder.
+def saved_kb():
     kb = InlineKeyboardBuilder()
-    # Add a button to the builder.
     kb.add(
         types.InlineKeyboardButton(
-            text="Test FSM",
-            callback_data="ask_user",
+            text="See dApps",
+            callback_data="show_dapps"
+        ),
+        types.InlineKeyboardButton(
+            text="Add Transaction",
+            callback_data="add_transaction"
+        ),
+        types.InlineKeyboardButton(
+            text="Back to Main",
+            callback_data="cancel"
+        )
+    )
+    kb.adjust(1)
+
+    return kb.as_markup()
+
+
+def select_dapp_kb(app_names: list):
+    kb = InlineKeyboardBuilder()
+    for i in app_names:
+        kb.add(
+            types.InlineKeyboardButton(
+                text=f"{i}",
+                callback_data=f"app_{i}"
+            )
+        )
+    kb.add(
+        types.InlineKeyboardButton(
+            text="Cancel",
+            callback_data="cancel"
+        )
+    )
+    kb.adjust(2, 1)
+
+    return kb.as_markup()
+
+
+def delete_dapp_kb(app_names: list):
+    kb = InlineKeyboardBuilder()
+    for i in app_names:
+        kb.add(
+            types.InlineKeyboardButton(
+                text=f"{i}",
+                callback_data=f"delete_app_{i}"
+            )
+        )
+    kb.add(
+        types.InlineKeyboardButton(
+            text="Cancel",
+            callback_data="cancel"
+        )
+    )
+    kb.adjust(2, 1)
+
+    return kb.as_markup()
+
+
+# Delete dApp confirmation keyboard
+def confirm_delete_kb(app_name: str):
+    kb = InlineKeyboardBuilder()
+    kb.add(
+        types.InlineKeyboardButton(
+            text=f"DELETE {app_name}",
+            callback_data="remove_dapp"
+        ),
+        types.InlineKeyboardButton(
+            text="Cancel",
+            callback_data="delete_dapp"
         )
     )
 
-    # Convert the builder to markup.
+    return kb.as_markup()
+
+
+# dApp main menu keyboards
+def main_dapps_menu_kb():
+    kb = InlineKeyboardBuilder()
+    kb.add(
+        types.InlineKeyboardButton(
+            text="Transactions",
+            callback_data="see_transactions"
+        ),
+        types.InlineKeyboardButton(
+            text="Delete dApp",
+            callback_data="delete_dapp"
+        )
+    )
+    kb.adjust(1)
+
+    return kb.as_markup()
+
+
+def cancel_kb() -> types.InlineKeyboardMarkup:
+    kb = InlineKeyboardBuilder()
+    kb.add(
+        types.InlineKeyboardButton(
+            text="Cancel",
+            callback_data="cancel"
+        )
+    )
+
     return kb.as_markup()

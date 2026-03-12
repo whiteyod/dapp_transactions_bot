@@ -27,5 +27,5 @@ class Settings(BaseSettings):
         env_file_encoding = "utf-8"
 
 
-# A singleton config object imported across the project.
+# A singleton config object imported across the project
 config = Settings()

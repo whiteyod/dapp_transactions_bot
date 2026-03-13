@@ -24,8 +24,9 @@ class CreateDAppPayload(BaseModel):
 
 
 class TransactionPayload(BaseModel):
-    app_name: str
     trans_amount: float
+    timestamp: str | None = None
+    description: str | None = None
 
 
 # ------------------------ API Endpoints ---------------------
@@ -33,9 +34,19 @@ class TransactionPayload(BaseModel):
 # Get all user dApps data
 @app.get("/dapps")
 async def get_dapps(user_id: int = Depends(verify_telegram_auth)):
-    rows = await get_all_dapps(user_id=user_id)
+    rows = await get_transactions_sum(user_id=user_id)
 
-    return [{"name": r[0], "owner": r[1], "treasury": r[2]} for r in rows]
+    return [
+        {
+            "id": item["name"],
+            "name": item["name"],
+            "ownerWallet": item["owner"],
+            "treasuryWallet": item["treasury"],
+            "balance": float(item["balance"]),
+            "usdBalance": float(item["USD"])
+        }
+        for item in rows
+    ]
 
 
 # Return raw transaction rows
@@ -55,10 +66,20 @@ async def get_transactions_fror_dapp_endpoint(
 async def get_dapp(
     app_name: str, user_id: int = Depends(verify_telegram_auth)
 ):
-    rows = await get_all_dapps(user_id=user_id)
-    for r in rows:
-        if r[0] == app_name:
-            return {"name": r[0], "owner": r[1], "treasury": r[2]}
+    rows = await get_transactions_sum(user_id=user_id)
+    for item in rows:
+        if item["name"] == app_name:
+            return [
+                {
+                    "id": item["name"],
+                    "name": item["name"],
+                    "ownerWallet": item["owner"],
+                    "treasuryWallet": item["treasury"],
+                    "balance": float(item["balance"]),
+                    "usdBalance": float(item["USD"])
+                }
+                for item in rows
+            ]
     raise HTTPException(status_code=404, detail="dApp not found")
 
 
@@ -90,7 +111,7 @@ async def add_transaction(
         trsansaction_amount=payload.trans_amount
     )
 
-    return {"message": f"Transaction saved for {payload.app_name}"}
+    return {"message": f"Transaction saved for {app_name}"}
 
 
 # Remove dApp

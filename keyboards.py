@@ -5,8 +5,18 @@ This also makes it easier to reuse the same keyboards across multiple handlers.
 """
  
 from aiogram import types
-from aiogram.utils.keyboard import InlineKeyboardBuilder
+from aiogram.utils.keyboard import InlineKeyboardBuilder, WebAppInfo
  
+
+def open_mini_app_kb():
+    kb = InlineKeyboardBuilder()
+    kb.add(
+        types.InlineKeyboardButton(
+            text="Open Mini App",
+            web_app=WebAppInfo(url="")
+        )
+    )
+
  
 def start_kb() -> types.InlineKeyboardMarkup:
     """Create a one-button inline keyboard.

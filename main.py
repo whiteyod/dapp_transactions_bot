@@ -14,12 +14,15 @@ Typical customization points for your own template-based bot:
 
 import asyncio
 import logging
+import uvicorn
 
 from aiogram import Bot, Dispatcher
 from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums.parse_mode import ParseMode
 from loguru import logger
+
+from api.api import app
 from config_reader import config
 from handlers import add_transactions, commands, create_dapp, show_dapps, \
     another_buttons, delete_dapp, show_transactions
@@ -65,8 +68,12 @@ If you deploy via webhooks, remove `start_polling(...)` and configure webhook.
     # drop pending updates so you start from a clean state.
     await bot.delete_webhook(drop_pending_updates=True)
 
-    # Start receiving updates.
-    await dp.start_polling(bot)
+    # Init API for mini app
+    config_api = uvicorn.Config(app, host="127.0.0.1", port=8020)
+    server = uvicorn.Server(config_api)
+
+    # Start bot and API for mini app.
+    await asyncio.gather(dp.start_polling(bot), server.serve())
 
 
 if __name__ == "__main__":

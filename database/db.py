@@ -1,4 +1,5 @@
 import sqlite3
+from services.container import get_quotes
 
 
 # Creates database engine
@@ -136,3 +137,34 @@ async def get_transactions_for_dapp(user_id: int, app_name: str):
     )
 
     return c.fetchall()
+
+
+async def get_transactions_sum(user_id: int):
+    """ Get transaction sum and calculate amount value in USD. """
+    # Get transactions rows
+    rows = await get_all_dapps(user_id)
+    items = []
+    # Get dapps info and store as a list of dicts
+    for app_name, owner, treasury in rows:
+        
+        # balance = sum(transactions)
+        items.append({
+            "name": app_name,
+            "owner": owner,
+            "treasury": treasury,
+        })
+    # Get transactions info, sum it and append to items
+    trans_rows = [
+        await get_transactions_for_dapp(user_id, it["name"]) for it in items
+    ]
+    # Get current sol price
+    symbol = "SOL"
+    quotes = await get_quotes([symbol])
+    result = quotes.get(symbol.upper())
+    # Calculate transactions sum
+    for i, trans in enumerate(trans_rows):
+        balance = sum(t[0] for t in trans) if trans else 0.0
+        items[i]["balance"] = balance
+        items[i]["USD"] = balance * result
+
+    return items

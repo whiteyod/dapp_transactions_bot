@@ -25,11 +25,9 @@ async def select_dapp_to_see(callback: types.CallbackQuery):
     app_name = callback.data.replace("see_", "")
 
     trans_rows = await get_transactions_for_dapp(user_id=user_id, app_name=app_name)
-    items = []
+    items = [f"<b>{app_name}</b>\n\n"]
     for i, trans in enumerate(trans_rows):
-        items.append(
-            f"{trans[0]} SOL\n")
-    print([i for i in items])
+        items.append(f"{trans[0]} SOL  <b>--------</b>  {trans[1]}\n")
     formatted = "\n".join(items)
     await callback.message.edit_text(
         f"{formatted}", reply_markup=back_to_see_transactions_kb()

@@ -34,8 +34,6 @@ async def show_all_dapps(callback: types.CallbackQuery):
         balance = sum(t[0] for t in trans) if trans else 0.0
         items[i]["balance"] = balance
         items[i]["USD"] = balance * result
-        num = [t[0] for t in trans]
-        print(num)
     # Create message layout
     daaps_message = ["<b>.................</b>\n\n"]
     for it in items:

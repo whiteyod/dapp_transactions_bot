@@ -25,7 +25,8 @@ async def create_all_tables():
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         user_id INTEGER NOT NULL,
         app_name TEXT NOT NULL,
-        transaction_amount REAL NOT NULL
+        transaction_amount REAL NOT NULL,
+        timestamp TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
         )
     """)
     conn.commit()
@@ -128,7 +129,7 @@ async def get_one_dapp(user_id: int, app_name: str | list):
 async def get_transactions_for_dapp(user_id: int, app_name: str):
     c.execute(
         """
-        SELECT transaction_amount
+        SELECT transaction_amount, timestamp
         FROM transactions
         WHERE user_id = ? AND app_name = ?
         """, (user_id, app_name)

@@ -1,7 +1,12 @@
 import requests
+import json
+import hmac
+import hashlib
+from urllib.parse import parse_qsl
 from fastapi import FastAPI, HTTPException, Depends, Query
 from pydantic import BaseModel
 
+from api.auth_verification import verify_telegram_auth
 from config_reader import config
 from database.db import get_all_dapps, save_dapp_data_in_db, \
     save_transaction_in_db, get_transactions_sum, get_transactions_for_dapp, \
@@ -9,27 +14,6 @@ from database.db import get_all_dapps, save_dapp_data_in_db, \
 
 
 app = FastAPI()
-
-
-# Get bot credentials
-BOT_TOKEN = config.bot_token.get_secret_value()
-
-
-# Verify user credentials to login
-def verify_telegram_auth(init_data: str = Query(...)) -> int:
-    """ Verify initData with Telegram and return user_id. """
-    response = requests.post(
-        f"https://api.telegram.org/bot{BOT_TOKEN}/verifyInitData",
-        data={"initData": init_data}
-    )
-    # Check initData, raise error if failed
-    if not response.ok:
-        raise HTTPException(
-            status_code=401, detail="Invalid auth"
-        )
-    # Return user_id from verified data
-    data = response.json()
-    return data.get("user", {}).get("id")
 
 
 # Create dApp pydantic models

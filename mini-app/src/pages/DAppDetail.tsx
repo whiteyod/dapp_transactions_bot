@@ -32,6 +32,7 @@ const DAppDetail = () => {
       map.get(key)!.push(tx);
     }
     for (const [day, items] of map) {
+      items.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
       groups.push({ day, label: formatDayLabel(day), items });
     }
     return groups.sort((a, b) => b.day.localeCompare(a.day));

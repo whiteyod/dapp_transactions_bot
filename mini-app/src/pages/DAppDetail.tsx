@@ -1,11 +1,18 @@
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, Plus } from "lucide-react";
+import { ArrowLeft, Plus, Copy } from "lucide-react";
 import { useDApp, useTransactions } from "@/hooks/use-dapps";
 import { TransactionItem } from "@/components/TransactionItem";
 import { AddTransactionDrawer } from "@/components/AddTransactionDrawer";
 import { Skeleton } from "@/components/ui/skeleton";
-import { truncateWallet, formatSol } from "@/lib/format";
+import { truncateWallet, formatSol, formatUsd } from "@/lib/format";
+import { toast } from "sonner";
+
+function copyToClipboard(text: string, label: string) {
+  navigator.clipboard.writeText(text).then(() => {
+    toast.success(`${label} copied`);
+  });
+}
 
 const DAppDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -52,22 +59,33 @@ const DAppDetail = () => {
                 <p className="font-mono text-3xl font-bold text-success mt-1">
                   {formatSol(dapp.balance)} SOL
                 </p>
+                <p className="font-mono text-sm text-muted-foreground">
+                  {formatUsd(dapp.usdBalance)}
+                </p>
               </div>
               <div className="grid grid-cols-2 gap-2 pt-2 border-t border-border">
-                <div>
+                <div
+                  className="active:opacity-60 transition-opacity cursor-pointer"
+                  onClick={() => copyToClipboard(dapp.ownerWallet, "Owner wallet")}
+                >
                   <p className="text-[10px] text-muted-foreground uppercase tracking-wider">
                     Owner
                   </p>
-                  <p className="font-mono text-xs text-foreground/80 mt-0.5">
+                  <p className="font-mono text-xs text-foreground/80 mt-0.5 flex items-center gap-1">
                     {truncateWallet(dapp.ownerWallet, 6)}
+                    <Copy className="w-3 h-3 text-muted-foreground/50" />
                   </p>
                 </div>
-                <div>
+                <div
+                  className="active:opacity-60 transition-opacity cursor-pointer"
+                  onClick={() => copyToClipboard(dapp.treasuryWallet, "Treasury wallet")}
+                >
                   <p className="text-[10px] text-muted-foreground uppercase tracking-wider">
                     Treasury
                   </p>
-                  <p className="font-mono text-xs text-foreground/80 mt-0.5">
+                  <p className="font-mono text-xs text-foreground/80 mt-0.5 flex items-center gap-1">
                     {truncateWallet(dapp.treasuryWallet, 6)}
+                    <Copy className="w-3 h-3 text-muted-foreground/50" />
                   </p>
                 </div>
               </div>

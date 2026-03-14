@@ -1,8 +1,15 @@
 import { useNavigate } from "react-router-dom";
-import { Trash2 } from "lucide-react";
+import { Trash2, Copy } from "lucide-react";
 import { Card } from "@/components/ui/card";
-import { truncateWallet, formatSol } from "@/lib/format";
+import { truncateWallet, formatSol, formatUsd } from "@/lib/format";
+import { toast } from "sonner";
 import type { DApp } from "@/types/dapp";
+
+function copyToClipboard(text: string, label: string) {
+  navigator.clipboard.writeText(text).then(() => {
+    toast.success(`${label} copied`);
+  });
+}
 
 interface DAppCardProps {
   dapp: DApp;
@@ -23,24 +30,37 @@ export function DAppCard({ dapp, onDelete }: DAppCardProps) {
             {dapp.name}
           </h3>
           <div className="mt-1.5 space-y-0.5">
-            <p className="text-xs text-muted-foreground">
+            <p
+              className="text-xs text-muted-foreground flex items-center gap-1 active:opacity-60 transition-opacity"
+              onClick={(e) => { e.stopPropagation(); copyToClipboard(dapp.ownerWallet, "Owner wallet"); }}
+            >
               Owner:{" "}
               <span className="font-mono text-foreground/70">
                 {truncateWallet(dapp.ownerWallet)}
               </span>
+              <Copy className="w-3 h-3 text-muted-foreground/50" />
             </p>
-            <p className="text-xs text-muted-foreground">
+            <p
+              className="text-xs text-muted-foreground flex items-center gap-1 active:opacity-60 transition-opacity"
+              onClick={(e) => { e.stopPropagation(); copyToClipboard(dapp.treasuryWallet, "Treasury wallet"); }}
+            >
               Treasury:{" "}
               <span className="font-mono text-foreground/70">
                 {truncateWallet(dapp.treasuryWallet)}
               </span>
+              <Copy className="w-3 h-3 text-muted-foreground/50" />
             </p>
           </div>
         </div>
         <div className="flex flex-col items-end gap-2">
-          <span className="font-mono font-medium text-lg text-success">
-            {formatSol(dapp.balance)} SOL
-          </span>
+          <div className="text-right">
+            <span className="font-mono font-medium text-lg text-success">
+              {formatSol(dapp.balance)} SOL
+            </span>
+            <p className="font-mono text-xs text-muted-foreground">
+              {formatUsd(dapp.usdBalance)}
+            </p>
+          </div>
           <button
             onClick={(e) => {
               e.stopPropagation();

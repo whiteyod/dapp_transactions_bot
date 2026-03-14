@@ -4,6 +4,7 @@ export interface DApp {
   ownerWallet: string;
   treasuryWallet: string;
   balance: number;
+  usdBalance: number;
 }
 
 export interface Transaction {

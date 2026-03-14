@@ -64,6 +64,7 @@ async function mapDApp(dapp: BackendDApp): Promise<DApp> {
     ownerWallet: dapp.ownerWallet,
     treasuryWallet: dapp.treasuryWallet,
     balance: dapp.balance,
+    usdBalance: dapp.usdBalance ?? 0,
   };
 }
 

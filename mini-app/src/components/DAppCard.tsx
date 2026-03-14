@@ -1,15 +1,8 @@
 import { useNavigate } from "react-router-dom";
-import { Trash2, Copy } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { truncateWallet, formatSol, formatUsd } from "@/lib/format";
-import { toast } from "sonner";
 import type { DApp } from "@/types/dapp";
-
-function copyToClipboard(text: string, label: string) {
-  navigator.clipboard.writeText(text).then(() => {
-    toast.success(`${label} copied`);
-  });
-}
 
 interface DAppCardProps {
   dapp: DApp;
@@ -30,25 +23,17 @@ export function DAppCard({ dapp, onDelete }: DAppCardProps) {
             {dapp.name}
           </h3>
           <div className="mt-1.5 space-y-0.5">
-            <p
-              className="text-xs text-muted-foreground flex items-center gap-1 active:opacity-60 transition-opacity"
-              onClick={(e) => { e.stopPropagation(); copyToClipboard(dapp.ownerWallet, "Owner wallet"); }}
-            >
+            <p className="text-xs text-muted-foreground">
               Owner:{" "}
               <span className="font-mono text-foreground/70">
                 {truncateWallet(dapp.ownerWallet)}
               </span>
-              <Copy className="w-3 h-3 text-muted-foreground/50" />
             </p>
-            <p
-              className="text-xs text-muted-foreground flex items-center gap-1 active:opacity-60 transition-opacity"
-              onClick={(e) => { e.stopPropagation(); copyToClipboard(dapp.treasuryWallet, "Treasury wallet"); }}
-            >
+            <p className="text-xs text-muted-foreground">
               Treasury:{" "}
               <span className="font-mono text-foreground/70">
                 {truncateWallet(dapp.treasuryWallet)}
               </span>
-              <Copy className="w-3 h-3 text-muted-foreground/50" />
             </p>
           </div>
         </div>

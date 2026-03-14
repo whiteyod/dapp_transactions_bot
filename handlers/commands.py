@@ -26,6 +26,6 @@ async def cmd_start(message: Message) -> None:
     await create_all_tables()
  
     await message.answer(
-        "Add transaction, see your dApps or add a new one.",
+        "Manage your dApps directly in the bot or use Mini App",
         reply_markup=start_kb(),
     )

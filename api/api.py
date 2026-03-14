@@ -4,6 +4,7 @@ import hmac
 import hashlib
 from urllib.parse import parse_qsl
 from fastapi import FastAPI, HTTPException, Depends, Query
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 from api.auth_verification import verify_telegram_auth
@@ -27,6 +28,19 @@ class TransactionPayload(BaseModel):
     trans_amount: float
     timestamp: str | None = None
     description: str | None = None
+
+
+# Enable middlewares
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "https://dapptransactionsmini.vercel.app/",
+        "https://dapptrans.mini.app.lolkek.live"
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"]
+)
 
 
 # ------------------------ API Endpoints ---------------------

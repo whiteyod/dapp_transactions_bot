@@ -8,15 +8,6 @@ from aiogram import types
 from aiogram.utils.keyboard import InlineKeyboardBuilder, WebAppInfo
  
 
-def open_mini_app_kb():
-    kb = InlineKeyboardBuilder()
-    kb.add(
-        types.InlineKeyboardButton(
-            text="Open Mini App",
-            web_app=WebAppInfo(url="")
-        )
-    )
-
  
 def start_kb() -> types.InlineKeyboardMarkup:
     """Create a one-button inline keyboard.
@@ -41,6 +32,10 @@ def start_kb() -> types.InlineKeyboardMarkup:
         types.InlineKeyboardButton(
             text="Add Transaction",
             callback_data="add_transaction"
+        ),
+        types.InlineKeyboardButton(
+            text="Open Mini App",
+            web_app=WebAppInfo(url="https://dapptransactionsmini.vercel.app/")
         )
     )
     kb.adjust(1)

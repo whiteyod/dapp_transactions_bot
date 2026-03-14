@@ -26,7 +26,7 @@ def verify_telegram_auth(init_data: str = Query(..., alias="init_data")) -> int:
         key=b"WebAppData",
         msg=BOT_TOKEN.encode(),
         digestmod=hashlib.sha256,
-    ).hexdigest()
+    ).digest()
 
     calculated_hash = hmac.new(
         key=secret_key,

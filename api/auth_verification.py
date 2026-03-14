@@ -31,7 +31,7 @@ def verify_telegram_auth(init_data: str = Query(..., alias="init_data")) -> int:
     calculated_hash = hmac.new(
         key=secret_key,
         msg=data_check_string.encode(),
-        digestmod=haslib.sha256,
+        digestmod=hashlib.sha256,
     ).hexdigest()
 
     if not hmac.compare_digest(calculated_hash, received_hash):

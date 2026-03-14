@@ -1,14 +1,8 @@
-import requests
-import json
-import hmac
-import hashlib
-from urllib.parse import parse_qsl
 from fastapi import FastAPI, HTTPException, Depends, Query
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 from api.auth_verification import verify_telegram_auth
-from config_reader import config
 from database.db import get_all_dapps, save_dapp_data_in_db, \
     save_transaction_in_db, get_transactions_sum, get_transactions_for_dapp, \
     delete_dapp_from_db, delete_transactions_from_db
@@ -34,7 +28,7 @@ class TransactionPayload(BaseModel):
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "https://dapptransactionsmini.vercel.app/",
+        "https://dapptransactionsmini.vercel.app",
         "https://dapptrans.mini.app.lolkek.live"
     ],
     allow_credentials=True,
@@ -83,17 +77,14 @@ async def get_dapp(
     rows = await get_transactions_sum(user_id=user_id)
     for item in rows:
         if item["name"] == app_name:
-            return [
-                {
-                    "id": item["name"],
-                    "name": item["name"],
-                    "ownerWallet": item["owner"],
-                    "treasuryWallet": item["treasury"],
-                    "balance": float(item["balance"]),
-                    "usdBalance": float(item["USD"])
-                }
-                for item in rows
-            ]
+            return {
+                "id": item["name"],
+                "name": item["name"],
+                "ownerWallet": item["owner"],
+                "treasuryWallet": item["treasury"],
+                "balance": float(item["balance"]),
+                "usdBalance": float(item["USD"])
+            }
     raise HTTPException(status_code=404, detail="dApp not found")
 
 

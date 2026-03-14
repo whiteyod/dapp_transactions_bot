@@ -33,9 +33,12 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
 }
 
 type BackendDApp = {
+  id: string;
   name: string;
-  owner: string;
-  treasury: string;
+  ownerWallet: string;
+  treasuryWallet: string;
+  balance: number;
+  usdBalance?: number;
 };
 
 type BackendTransaction = {
@@ -54,19 +57,13 @@ const mapTransaction = (
   timestamp: tx.timestamp,
 });
 
-async function getBalance(appName: string): Promise<number> {
-  const transactions = await request<BackendTransaction[]>(`/dapps/${encodeURIComponent(appName)}/transactions`);
-  return transactions.reduce((sum, tx) => sum + tx.amount, 0);
-}
-
 async function mapDApp(dapp: BackendDApp): Promise<DApp> {
-  const balance = await getBalance(dapp.name);
   return {
-    id: dapp.name,
+    id: dapp.id,
     name: dapp.name,
-    ownerWallet: dapp.owner,
-    treasuryWallet: dapp.treasury,
-    balance,
+    ownerWallet: dapp.ownerWallet,
+    treasuryWallet: dapp.treasuryWallet,
+    balance: dapp.balance,
   };
 }
 

@@ -28,3 +28,20 @@ export function formatTimestamp(iso: string): string {
     minute: "2-digit",
   });
 }
+
+export function formatDayKey(iso: string): string {
+  const d = new Date(iso);
+  return d.toISOString().slice(0, 10);
+}
+
+export function formatDayLabel(dateKey: string): string {
+  const today = new Date().toISOString().slice(0, 10);
+  const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+  if (dateKey === today) return "Today";
+  if (dateKey === yesterday) return "Yesterday";
+  return new Date(dateKey + "T00:00:00").toLocaleDateString("en-US", {
+    weekday: "short",
+    month: "short",
+    day: "numeric",
+  });
+}

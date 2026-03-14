@@ -1,12 +1,13 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft, Plus, Copy } from "lucide-react";
 import { useDApp, useTransactions } from "@/hooks/use-dapps";
 import { TransactionItem } from "@/components/TransactionItem";
 import { AddTransactionDrawer } from "@/components/AddTransactionDrawer";
 import { Skeleton } from "@/components/ui/skeleton";
-import { truncateWallet, formatSol, formatUsd } from "@/lib/format";
+import { truncateWallet, formatSol, formatUsd, formatDayKey, formatDayLabel } from "@/lib/format";
 import { toast } from "sonner";
+import type { Transaction } from "@/types/dapp";
 
 function copyToClipboard(text: string, label: string) {
   navigator.clipboard.writeText(text).then(() => {
@@ -21,18 +22,26 @@ const DAppDetail = () => {
   const { data: transactions, isLoading: loadingTx } = useTransactions(id!);
   const [addOpen, setAddOpen] = useState(false);
 
+  const groupedTransactions = useMemo(() => {
+    if (!transactions || transactions.length === 0) return [];
+    const groups: { day: string; label: string; items: Transaction[] }[] = [];
+    const map = new Map<string, Transaction[]>();
+    for (const tx of transactions) {
+      const key = formatDayKey(tx.timestamp);
+      if (!map.has(key)) map.set(key, []);
+      map.get(key)!.push(tx);
+    }
+    for (const [day, items] of map) {
+      groups.push({ day, label: formatDayLabel(day), items });
+    }
+    return groups.sort((a, b) => b.day.localeCompare(a.day));
+  }, [transactions]);
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="sticky top-0 z-40 bg-primary px-4 py-4 shadow-md">
         <div className="flex items-center gap-3">
-          <button
-            onClick={() => navigate("/")}
-            className="p-1 -ml-1 text-primary-foreground/80 active:text-primary-foreground"
-            aria-label="Back"
-          >
-            <ArrowLeft className="w-5 h-5" />
-          </button>
           <div className="min-w-0 flex-1">
             {loadingDApp ? (
               <Skeleton className="h-5 w-32 bg-primary-foreground/20" />
@@ -102,10 +111,19 @@ const DAppDetail = () => {
             Array.from({ length: 3 }).map((_, i) => (
               <Skeleton key={i} className="h-14 w-full mb-2 rounded" />
             ))
-          ) : transactions && transactions.length > 0 ? (
-            <div className="bg-card rounded-lg border px-3">
-              {transactions.map((tx) => (
-                <TransactionItem key={tx.id} tx={tx} />
+          ) : groupedTransactions.length > 0 ? (
+            <div className="space-y-4">
+              {groupedTransactions.map((group) => (
+                <div key={group.day}>
+                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
+                    {group.label}
+                  </p>
+                  <div className="bg-card rounded-lg border px-3">
+                    {group.items.map((tx) => (
+                      <TransactionItem key={tx.id} tx={tx} />
+                    ))}
+                  </div>
+                </div>
               ))}
             </div>
           ) : (
@@ -116,7 +134,16 @@ const DAppDetail = () => {
         </div>
       </main>
 
-      {/* FAB */}
+      {/* Back FAB */}
+      <button
+        onClick={() => navigate("/")}
+        className="fixed bottom-6 left-6 z-50 w-14 h-14 rounded-full bg-muted text-foreground shadow-lg flex items-center justify-center active:scale-95 transition-transform"
+        aria-label="Back to list"
+      >
+        <ArrowLeft className="w-6 h-6" />
+      </button>
+
+      {/* Add FAB */}
       <button
         onClick={() => setAddOpen(true)}
         className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-primary text-primary-foreground shadow-lg flex items-center justify-center active:scale-95 transition-transform"
